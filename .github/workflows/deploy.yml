@@ -1,0 +1,39 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: true
+        default: "v2.36"
+      version_only:
+        description: "Tag version only"
+        required: true
+        default: "true"
+      dry-run:
+        description: "Dry run"
+        required: false
+        default: "true"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-buildx-action@v1
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        if: github.event.inputs.dry-run != "true"
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        uses: docker/bake-action@v1.2.0
+        env:
+          NSENTER_VERSION: ${{ github.event.inputs.version }}
+          NSENTER_VERSION_ONLY: ${{ github.event.inputs.version_only }}
+        with:
+          targets: image-all
+          push: github.event.inputs.dry-run != "true"
