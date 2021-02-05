@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version"
+        description: 'Version'
         required: true
-        default: "v2.36"
+        default: 'v2.36'
       version_only:
-        description: "Tag version only"
+        description: 'Tag version only'
         required: true
-        default: "true"
+        default: 'true'
       dry-run:
-        description: "Dry run"
+        description: 'Dry run'
         required: false
-        default: "true"
+        default: 'true'
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
       -
         name: Login to DockerHub
         uses: docker/login-action@v1
-        if: github.event.inputs.dry-run != "true"
+        if: github.event.inputs.dry-run != 'true'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -36,4 +36,4 @@ jobs:
           NSENTER_VERSION_ONLY: ${{ github.event.inputs.version_only }}
         with:
           targets: image-all
-          push: github.event.inputs.dry-run != "true"
+          push: ${{ github.event.inputs.dry-run != 'true' }}
